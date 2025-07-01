@@ -3027,6 +3027,17 @@ static void gen_multi0F(DisasContext *s, X86DecodedInsn *decode)
 
     /* now check op code */
     switch (b) {
+
+    // --- ADD YOUR WRMSR LOGIC HERE ---
+    case 0x130: // This corresponds to opcode 0F 30 (wrmsr)
+        gen_helper_wrmsr(tcg_env); // Call the helper you defined
+    break;
+    // --- END OF YOUR WRMSR LOGIC ---
+    // --- ADD YOUR RDMSR LOGIC HERE ---
+    case 0x132: // This corresponds to opcode 0F 32 (rdmsr)
+        gen_helper_rdmsr(tcg_env); // Call the helper you defined
+    break;
+    // --- END OF YOUR RDMSR LOGIC ---
     case 0x1c7: /* RDSEED, RDPID with f3 prefix */
         mod = (modrm >> 6) & 3;
         switch ((modrm >> 3) & 7) {

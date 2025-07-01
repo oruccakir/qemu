@@ -520,6 +520,9 @@ typedef enum X86Seg {
             | MSR_EFER_LMA | MSR_EFER_NXE | MSR_EFER_SVME\
             | MSR_EFER_FFXSR))
 
+
+#define MSR_RH_SCORE                    0xC0010300 // Row Hammer Preventive Score Register
+
 #define MSR_STAR                        0xc0000081
 #define MSR_LSTAR                       0xc0000082
 #define MSR_CSTAR                       0xc0000083

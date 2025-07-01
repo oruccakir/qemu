@@ -128,6 +128,46 @@ void helper_wrpkru(CPUX86State *env, uint32_t ecx, uint64_t val)
     tlb_flush(cs);
 }
 
+
+void helper_wrmsr(CPUX86State *env)
+{
+    // The MSR index is passed via the ECX register
+    uint32_t msr_index = env->regs[R_ECX];
+    // The 64-bit value to write is in EDX:EAX
+    uint64_t val = ((uint64_t)env->regs[R_EDX] << 32) | (uint32_t)env->regs[R_EAX];
+
+    if (msr_index == MSR_RH_SCORE) {
+        // This is our custom MSR. Handle it here.
+        env->rh_preventive_score = val;
+    } else {
+        // This is a different MSR. Let QEMU's default logic handle it.
+        // This call might raise an exception if the MSR is not valid.
+        if (wrmsr_helper(env, msr_index, val)) {
+             raise_exception(env, EXCP0D_GPF);
+        }
+    }
+}
+
+void helper_rdmsr(CPUX86State *env)
+{
+    uint32_t msr_index = env->regs[R_ECX];
+    uint64_t val = 0;
+
+    if (msr_index == MSR_RH_SCORE) {
+        // This is our custom MSR. Read the value from our storage.
+        val = env->rh_preventive_score;
+    } else {
+        // This is a different MSR. Let QEMU's default logic handle it.
+        if (rdmsr_helper(env, msr_index, &val)) {
+             raise_exception(env, EXCP0D_GPF);
+        }
+    }
+
+    // Put the 64-bit result back into the EDX:EAX registers for the guest.
+    env->regs[R_EAX] = (uint32_t)val;
+    env->regs[R_EDX] = val >> 32;
+}
+
 target_ulong HELPER(rdpid)(CPUX86State *env)
 {
 #if !defined CONFIG_USER_ONLY
