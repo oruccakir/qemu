@@ -2140,6 +2140,8 @@ typedef struct CPUArchState {
     uint64_t xss;
     uint32_t umwait;
 
+    uint64_t row_hammer_preventive_score;
+
     TPRAccess tpr_access_type;
 
     X86CPUTopoInfo topo_info;
